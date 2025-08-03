@@ -517,7 +517,7 @@
         let currentSlideIndex = 0;
 
         // Initialize background settings
-        function initializeBackground() {
+        async function initializeBackground() {
             // Try to load settings from localStorage
             const savedMode = localStorage.getItem('bgMode') || 'gradient';
             const savedGradient = localStorage.getItem('bgGradient') || '1';
@@ -527,19 +527,56 @@
             currentGradient = parseInt(savedGradient);
             uploadedImages = savedImages;
             
-            // Load repo images (you can customize this list)
-            repoImages = [
-                'backgrounds/DSC01576.jpg',
-                'backgrounds/DSC01590.jpg', 
-                'backgrounds/DSC01590.jpg',
-                'backgrounds/DSC03261.jpg'
-                // Add more as needed
-            ];
+            // Try to load images from backgrounds folder
+            await loadRepoImages();
             
             setBackgroundMode(currentMode);
             if (currentMode === 'gradient') {
                 setGradient(currentGradient);
             }
+        }
+
+        // Load images from backgrounds folder
+        async function loadRepoImages() {
+            // Your actual image files
+            const yourImages = [
+                'DSC01576.JPG',
+                'DSC01590.JPG', 
+                'DSC02613.JPG',
+                'DSC03261.JPG'
+            ];
+            
+            // Additional common patterns (both cases)
+            const commonImages = [
+                'image1.jpg', 'image1.JPG',
+                'image2.jpg', 'image2.JPG',
+                'image3.jpg', 'image3.JPG',
+                'nature1.jpg', 'nature1.JPG',
+                'nature2.jpg', 'nature2.JPG',
+                'city1.jpg', 'city1.JPG',
+                'abstract1.jpg', 'abstract1.JPG',
+                'photo1.png', 'photo1.PNG',
+                'photo2.png', 'photo2.PNG',
+                'wallpaper1.jpg', 'wallpaper1.JPG',
+                'wallpaper2.jpg', 'wallpaper2.JPG'
+            ];
+            
+            const allPossibleImages = [...yourImages, ...commonImages];
+            
+            // Test which images actually exist
+            repoImages = [];
+            for (const filename of allPossibleImages) {
+                try {
+                    const response = await fetch(`backgrounds/${filename}`, { method: 'HEAD' });
+                    if (response.ok) {
+                        repoImages.push(`backgrounds/${filename}`);
+                    }
+                } catch (error) {
+                    // Image doesn't exist, skip it
+                }
+            }
+            
+            console.log('Found repo images:', repoImages);
         }
 
         // Toggle settings panel
