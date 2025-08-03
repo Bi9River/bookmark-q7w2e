@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .greeting {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+
+        .weather {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .weather-icon {
+            font-size: 1.2rem;
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            padding: 12px 20px;
+            border: none;
+            font-size: 16px;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            display: block;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-box:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .bookmarks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .category {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .category:hover {
+            transform: translateY(-5px);
+        }
+
+        .category-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bookmark-item {
+            display: block;
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            text-decoration: none;
+            color: #555;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .bookmark-item:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateX(5px);
+            border-left-color: #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .bookmark-item .domain {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 3px;
+        }
+
+        .bookmark-item .title {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .bookmarks-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Welcome, Shiqi!</h1>
+            <div class="greeting" id="greeting"></div>
+            <div class="weather" id="weather">
+                <span>Loading weather...</span>
+            </div>
+            <input type="text" class="search-box" placeholder="Search bookmarks..." id="searchInput">
+        </div>
+
+        <div class="bookmarks-grid">
+            <div class="category">
+                <div class="category-title">🎬 Entertainment & Video</div>
+                <a href="https://bilibili.com" class="bookmark-item" data-keywords="bilibili b站 视频">
+                    <div class="title">Bilibili</div>
+                    <div class="domain">bilibili.com</div>
+                </a>
+                <a href="https://youtube.com" class="bookmark-item" data-keywords="youtube 视频">
+                    <div class="title">YouTube</div>
+                    <div class="domain">youtube.com</div>
+                </a>
+                <a href="https://netflix.com/browse" class="bookmark-item" data-keywords="netflix 电影 剧集">
+                    <div class="title">Netflix</div>
+                    <div class="domain">netflix.com</div>
+                </a>
+            </div>
+
+            <div class="category">
+                <div class="category-title">🛒 Shopping</div>
+                <a href="https://apotea.se" class="bookmark-item" data-keywords="apotea 药店 保健">
+                    <div class="title">Apotea</div>
+                    <div class="domain">apotea.se</div>
+                </a>
+                <a href="https://amazon.se" class="bookmark-item" data-keywords="amazon 购物">
+                    <div class="title">Amazon Sweden</div>
+                    <div class="domain">amazon.se</div>
+                </a>
+                <a href="https://webhallen.com" class="bookmark-item" data-keywords="webhallen 电子产品">
+                    <div class="title">Webhallen</div>
+                    <div class="domain">webhallen.com</div>
+                </a>
+                <a href="https://elgiganten.se" class="bookmark-item" data-keywords="elgiganten 电器">
+                    <div class="title">Elgiganten</div>
+                    <div class="domain">elgiganten.se</div>
+                </a>
+                <a href="https://ikea.se" class="bookmark-item" data-keywords="ikea 家具">
+                    <div class="title">IKEA Sweden</div>
+                    <div class="domain">ikea.se</div>
+                </a>
+            </div>
+
+            <div class="category">
+                <div class="category-title">🎓 Study & School</div>
+                <a href="https://minasidor.sgs.se" class="bookmark-item" data-keywords="sgs 学生 账户">
+                    <div class="title">SGS Mina Sidor</div>
+                    <div class="domain">minasidor.sgs.se</div>
+                </a>
+                <a href="https://canvas.chalmers.se" class="bookmark-item" data-keywords="canvas chalmers 课程">
+                    <div class="title">Chalmers Canvas</div>
+                    <div class="domain">canvas.chalmers.se</div>
+                </a>
+                <a href="https://cloud.timeedit.net/chalmers/web/student/" class="bookmark-item" data-keywords="timeedit 课表 时间表">
+                    <div class="title">TimeEdit - Chalmers</div>
+                    <div class="domain">cloud.timeedit.net</div>
+                </a>
+                <a href="https://udemy.com" class="bookmark-item" data-keywords="udemy 在线课程 学习">
+                    <div class="title">Udemy</div>
+                    <div class="domain">udemy.com</div>
+                </a>
+            </div>
+
+            <div class="category">
+                <div class="category-title">💻 Development & Tools</div>
+                <a href="https://overleaf.com" class="bookmark-item" data-keywords="overleaf latex 论文">
+                    <div class="title">Overleaf</div>
+                    <div class="domain">overleaf.com</div>
+                </a>
+                <a href="https://github.com" class="bookmark-item" data-keywords="github 代码 开发">
+                    <div class="title">GitHub</div>
+                    <div class="domain">github.com</div>
+                </a>
+                <a href="https://leetcode.cn" class="bookmark-item" data-keywords="leetcode 算法 编程">
+                    <div class="title">LeetCode</div>
+                    <div class="domain">leetcode.cn</div>
+                </a>
+            </div>
+
+            <div class="category">
+                <div class="category-title">🤖 AI Assistants</div>
+                <a href="https://chat.openai.com" class="bookmark-item" data-keywords="chatgpt openai ai">
+                    <div class="title">ChatGPT</div>
+                    <div class="domain">chat.openai.com</div>
+                </a>
+                <a href="https://claude.ai" class="bookmark-item" data-keywords="claude ai anthropic">
+                    <div class="title">Claude</div>
+                    <div class="domain">claude.ai</div>
+                </a>
+            </div>
+
+            <div class="category">
+                <div class="category-title">🏛️ Public Services</div>
+                <a href="https://transportstyrelsen.se" class="bookmark-item" data-keywords="transportstyrelsen 交通 驾照">
+                    <div class="title">Transportstyrelsen</div>
+                    <div class="domain">transportstyrelsen.se</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dynamic greeting based on time
+        function updateGreeting() {
+            const now = new Date();
+            const hour = now.getHours();
+            let greeting;
+            
+            if (hour >= 5 && hour < 12) {
+                greeting = "Good morning! Ready to start your day?";
+            } else if (hour >= 12 && hour < 17) {
+                greeting = "Good afternoon! Hope you're having a productive day.";
+            } else if (hour >= 17 && hour < 22) {
+                greeting = "Good evening! Time to unwind a bit.";
+            } else {
+                greeting = "Working late? Don't forget to rest!";
+            }
+            
+            document.getElementById('greeting').textContent = greeting;
+        }
+
+        // Weather function for Lindholmen, Göteborg
+        async function updateWeather() {
+            try {
+                // Lindholmen coordinates: approximately 57.7056, 11.9378
+                const lat = 57.7056;
+                const lon = 11.9378;
+                
+                // SMHI API endpoint for weather forecasts
+                const response = await fetch(`https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${lon}/lat/${lat}/data.json`);
+                
+                if (!response.ok) {
+                    throw new Error('Weather data unavailable');
+                }
+                
+                const data = await response.json();
+                const currentForecast = data.timeSeries[0];
+                
+                // Extract temperature and weather symbol
+                const temperature = currentForecast.parameters.find(p => p.name === 't')?.values[0];
+                const weatherSymbol = currentForecast.parameters.find(p => p.name === 'Wsymb2')?.values[0];
+                
+                // Weather symbol to emoji mapping (SMHI weather symbols)
+                const weatherEmojis = {
+                    1: '☀️', 2: '🌤️', 3: '⛅', 4: '☁️', 5: '🌦️', 6: '🌦️',
+                    7: '❄️', 8: '🌧️', 9: '⛈️', 10: '🌫️', 11: '❄️',
+                    12: '🌨️', 13: '🌨️', 14: '🌨️', 15: '🌫️',
+                    16: '⛈️', 17: '⛈️', 18: '🌧️', 19: '🌨️', 20: '🌨️',
+                    21: '⛈️', 22: '⛈️', 23: '🌨️', 24: '⛈️', 25: '🌨️', 26: '🌨️', 27: '🌫️'
+                };
+                
+                const weatherIcon = weatherEmojis[weatherSymbol] || '🌤️';
+                const tempRounded = Math.round(temperature);
+                
+                document.getElementById('weather').innerHTML = `
+                    <span class="weather-icon">${weatherIcon}</span>
+                    <span>Lindholmen: ${tempRounded}°C</span>
+                `;
+                
+            } catch (error) {
+                console.error('Weather fetch error:', error);
+                document.getElementById('weather').innerHTML = `
+                    <span class="weather-icon">🌤️</span>
+                    <span>Lindholmen weather unavailable</span>
+                `;
+            }
+        }
+        
+        // Update greeting and weather on page load
+        updateGreeting();
+        updateWeather();
+
+        const searchInput = document.getElementById('searchInput');
+        const bookmarkItems = document.querySelectorAll('.bookmark-item');
+        const categories = document.querySelectorAll('.category');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            categories.forEach(category => {
+                let hasVisibleItems = false;
+                const items = category.querySelectorAll('.bookmark-item');
+                
+                items.forEach(item => {
+                    const title = item.querySelector('.title').textContent.toLowerCase();
+                    const domain = item.querySelector('.domain').textContent.toLowerCase();
+                    const keywords = item.getAttribute('data-keywords').toLowerCase();
+                    
+                    if (title.includes(searchTerm) || domain.includes(searchTerm) || keywords.includes(searchTerm)) {
+                        item.classList.remove('hidden');
+                        hasVisibleItems = true;
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+                
+                if (hasVisibleItems) {
+                    category.classList.remove('hidden');
+                } else {
+                    category.classList.add('hidden');
+                }
+            });
+        });
+
+        // Add keyboard shortcut to focus search
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '/' && e.target !== searchInput) {
+                e.preventDefault();
+                searchInput.focus();
+            }
+            if (e.key === 'Escape') {
+                searchInput.blur();
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input'));
+            }
+        });
+    </script>
+</body>
+</html>`
