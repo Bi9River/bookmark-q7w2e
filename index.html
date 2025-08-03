@@ -40,21 +40,7 @@
             color: rgba(255, 255, 255, 0.9);
             font-size: 1.1rem;
             font-weight: 400;
-            margin-bottom: 20px;
-        }
-
-        .weather {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .weather-icon {
-            font-size: 1.2rem;
+            margin-bottom: 30px;
         }
 
         .search-box {
@@ -156,9 +142,6 @@
         <div class="header">
             <h1>Welcome, Shiqi!</h1>
             <div class="greeting" id="greeting"></div>
-            <div class="weather" id="weather">
-                <span>Loading weather...</span>
-            </div>
             <input type="text" class="search-box" placeholder="Search bookmarks..." id="searchInput">
         </div>
 
@@ -281,56 +264,8 @@
             document.getElementById('greeting').textContent = greeting;
         }
 
-        // Weather function for Lindholmen, Göteborg
-        async function updateWeather() {
-            try {
-                // Lindholmen coordinates: approximately 57.7056, 11.9378
-                const lat = 57.7056;
-                const lon = 11.9378;
-                
-                // SMHI API endpoint for weather forecasts
-                const response = await fetch(`https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${lon}/lat/${lat}/data.json`);
-                
-                if (!response.ok) {
-                    throw new Error('Weather data unavailable');
-                }
-                
-                const data = await response.json();
-                const currentForecast = data.timeSeries[0];
-                
-                // Extract temperature and weather symbol
-                const temperature = currentForecast.parameters.find(p => p.name === 't')?.values[0];
-                const weatherSymbol = currentForecast.parameters.find(p => p.name === 'Wsymb2')?.values[0];
-                
-                // Weather symbol to emoji mapping (SMHI weather symbols)
-                const weatherEmojis = {
-                    1: '☀️', 2: '🌤️', 3: '⛅', 4: '☁️', 5: '🌦️', 6: '🌦️',
-                    7: '❄️', 8: '🌧️', 9: '⛈️', 10: '🌫️', 11: '❄️',
-                    12: '🌨️', 13: '🌨️', 14: '🌨️', 15: '🌫️',
-                    16: '⛈️', 17: '⛈️', 18: '🌧️', 19: '🌨️', 20: '🌨️',
-                    21: '⛈️', 22: '⛈️', 23: '🌨️', 24: '⛈️', 25: '🌨️', 26: '🌨️', 27: '🌫️'
-                };
-                
-                const weatherIcon = weatherEmojis[weatherSymbol] || '🌤️';
-                const tempRounded = Math.round(temperature);
-                
-                document.getElementById('weather').innerHTML = `
-                    <span class="weather-icon">${weatherIcon}</span>
-                    <span>Lindholmen: ${tempRounded}°C</span>
-                `;
-                
-            } catch (error) {
-                console.error('Weather fetch error:', error);
-                document.getElementById('weather').innerHTML = `
-                    <span class="weather-icon">🌤️</span>
-                    <span>Lindholmen weather unavailable</span>
-                `;
-            }
-        }
-        
-        // Update greeting and weather on page load
+        // Update greeting on page load
         updateGreeting();
-        updateWeather();
 
         const searchInput = document.getElementById('searchInput');
         const bookmarkItems = document.querySelectorAll('.bookmark-item');
@@ -378,4 +313,4 @@
         });
     </script>
 </body>
-</html>`
+</html>
