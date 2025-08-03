@@ -503,8 +503,195 @@
                 searchInput.blur();
                 searchInput.value = '';
                 searchInput.dispatchEvent(new Event('input'));
+                // Also close settings panel
+                document.getElementById('settingsPanel').classList.remove('show');
             }
         });
+
+        // Background settings management
+        let currentMode = 'gradient';
+        let currentGradient = 1;
+        let uploadedImages = [];
+        let repoImages = []; // Images from /backgrounds/ folder
+        let slideshowInterval;
+        let currentSlideIndex = 0;
+
+        // Initialize background settings
+        function initializeBackground() {
+            // Try to load settings from localStorage
+            const savedMode = localStorage.getItem('bgMode') || 'gradient';
+            const savedGradient = localStorage.getItem('bgGradient') || '1';
+            const savedImages = JSON.parse(localStorage.getItem('bgImages') || '[]');
+            
+            currentMode = savedMode;
+            currentGradient = parseInt(savedGradient);
+            uploadedImages = savedImages;
+            
+            // Load repo images (you can customize this list)
+            repoImages = [
+                'backgrounds/DSC01576.jpg',
+                'backgrounds/DSC01590.jpg', 
+                'backgrounds/DSC01590.jpg',
+                'backgrounds/DSC03261.jpg'
+                // Add more as needed
+            ];
+            
+            setBackgroundMode(currentMode);
+            if (currentMode === 'gradient') {
+                setGradient(currentGradient);
+            }
+        }
+
+        // Toggle settings panel
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            panel.classList.toggle('show');
+        }
+
+        // Set background mode
+        function setBackgroundMode(mode) {
+            currentMode = mode;
+            localStorage.setItem('bgMode', mode);
+            
+            // Update UI
+            document.querySelectorAll('.bg-mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(mode + 'Mode').classList.add('active');
+            
+            // Show/hide sections
+            document.getElementById('gradientSection').style.display = mode === 'gradient' ? 'block' : 'none';
+            document.getElementById('imageSection').style.display = mode !== 'gradient' ? 'block' : 'none';
+            
+            // Clear existing backgrounds
+            clearInterval(slideshowInterval);
+            document.getElementById('photoWall').innerHTML = '';
+            document.body.style.backgroundImage = '';
+            
+            // Apply new mode
+            switch(mode) {
+                case 'gradient':
+                    setGradient(currentGradient);
+                    break;
+                case 'single':
+                    setSingleImage();
+                    break;
+                case 'slideshow':
+                    startSlideshow();
+                    break;
+                case 'photowall':
+                    createPhotoWall();
+                    break;
+            }
+        }
+
+        // Set gradient background
+        function setGradient(num) {
+            currentGradient = num;
+            localStorage.setItem('bgGradient', num.toString());
+            
+            // Update UI
+            document.querySelectorAll('.bg-option').forEach(option => option.classList.remove('active'));
+            document.querySelectorAll('.bg-option')[num - 1].classList.add('active');
+            
+            // Apply gradient
+            document.body.className = `bg-gradient-${num}`;
+        }
+
+        // Handle image upload
+        function handleImageUpload(event) {
+            const files = Array.from(event.target.files);
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImages.push(e.target.result);
+                    localStorage.setItem('bgImages', JSON.stringify(uploadedImages));
+                    
+                    // Refresh current mode if using images
+                    if (currentMode !== 'gradient') {
+                        setBackgroundMode(currentMode);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Get all available images
+        function getAllImages() {
+            return [...uploadedImages, ...repoImages];
+        }
+
+        // Set single image background
+        function setSingleImage() {
+            const images = getAllImages();
+            if (images.length > 0) {
+                const randomImage = images[Math.floor(Math.random() * images.length)];
+                document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${randomImage}')`;
+            }
+        }
+
+        // Start slideshow
+        function startSlideshow() {
+            const images = getAllImages();
+            if (images.length === 0) return;
+            
+            currentSlideIndex = 0;
+            
+            function showNextSlide() {
+                const image = images[currentSlideIndex];
+                document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('${image}')`;
+                currentSlideIndex = (currentSlideIndex + 1) % images.length;
+            }
+            
+            showNextSlide();
+            slideshowInterval = setInterval(showNextSlide, 5000); // Change every 5 seconds
+        }
+
+        // Create photo wall
+        function createPhotoWall() {
+            const images = getAllImages();
+            const photoWall = document.getElementById('photoWall');
+            photoWall.innerHTML = '';
+            
+            if (images.length === 0) return;
+            
+            // Create floating photo elements
+            for (let i = 0; i < Math.min(15, images.length * 3); i++) {
+                const photoDiv = document.createElement('div');
+                photoDiv.className = 'photo-item';
+                
+                const randomImage = images[Math.floor(Math.random() * images.length)];
+                photoDiv.style.backgroundImage = `url('${randomImage}')`;
+                
+                // Random size and position
+                const size = Math.random() * 150 + 100; // 100-250px
+                photoDiv.style.width = size + 'px';
+                photoDiv.style.height = size + 'px';
+                photoDiv.style.left = Math.random() * (window.innerWidth - size) + 'px';
+                photoDiv.style.top = Math.random() * (window.innerHeight - size) + 'px';
+                
+                // Random animation delay
+                photoDiv.style.animationDelay = Math.random() * 20 + 's';
+                
+                photoWall.appendChild(photoDiv);
+            }
+        }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBackground();
+        });
+
+        // Also initialize immediately in case DOMContentLoaded already fired
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeBackground);
+        } else {
+            initializeBackground();
+        }
+
+        // Make functions globally available
+        window.toggleSettings = toggleSettings;
+        window.setBackgroundMode = setBackgroundMode;
+        window.setGradient = setGradient;
+        window.handleImageUpload = handleImageUpload;
     </script>
 </body>
 </html>
