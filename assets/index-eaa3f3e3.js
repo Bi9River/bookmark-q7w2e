@@ -148,7 +148,6 @@
     <div class="header">
       <h1>Welcome, Shiqi!</h1>
       <div class="controls">
-        <button class="btn" id="bg-btn">🎨 换背景</button>
         <button class="btn" id="photo-btn">📸 照片墙</button>
       </div>
     </div>
